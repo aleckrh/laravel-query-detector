@@ -5,7 +5,7 @@ namespace BeyondCode\QueryDetector\Outputs;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\Response;
 
-use Debugbar as LaravelDebugbar;
+use Barryvdh\Debugbar\Facade as LaravelDebugbar;
 use DebugBar\DataCollector\MessagesCollector;
 
 class Debugbar implements Output
@@ -15,8 +15,10 @@ class Debugbar implements Output
     public function boot()
     {
         $this->collector = new MessagesCollector('N+1 Queries');
-
-        LaravelDebugbar::addCollector($this->collector);
+        
+        if (!LaravelDebugbar::hasCollector($this->collector->getName())) {
+            LaravelDebugbar::addCollector($this->collector);
+        }
     }
 
     public function output(Collection $detectedQueries, Response $response)
